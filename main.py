@@ -6,9 +6,10 @@ import os.path
 import pandas as pd
 import matplotlib.pyplot as plt
 
-N_EPOCHS = 20000
+N_EPOCHS = 5000
 # With the value at false first it checks if there is already a model to load
-FORCE_GENERATION_NEW_MODEL = False
+FORCE_GENERATION_NEW_MODEL = True
+FORCE_GENERATION_TENSOR = True
 LR = 1e-3
 PATH_DATA = "data/"
 
@@ -17,7 +18,7 @@ class Model(nn.Module):
     def __init__(self, numInFeatures):
         super(Model, self).__init__()
         self.hidden_layer = nn.Linear(numInFeatures, 2)
-        self.hidden_activation = nn.Tanh()
+        self.hidden_activation = nn.ReLU()
         self.output_linear = nn.Linear(2, 1)
         torch.nn.init.normal_(self.output_linear.weight, mean=0, std=1e-9)
 
@@ -51,6 +52,14 @@ def generateTensorForTraining():
     inputTraining = inputTraining.drop("PassengerId", axis=1)
     testData = testData.drop("PassengerId", axis=1)
 
+    for col in inputTraining.columns:
+        if col not in testData.columns:
+            testData[col] = 0
+    
+    for col in testData.columns:
+        if col not in inputTraining.columns:
+            inputTraining[col] = 0
+
     TensorInputForTraining = torch.from_numpy(
         inputTraining.to_numpy(dtype=np.float32, na_value=0))
     TensorResForTraining = torch.from_numpy(
@@ -79,7 +88,7 @@ def getModel(TensorInputForTraining, TensorOutputForTraining, nameModelFile):
 
 def generateOutputTest(TensorInputForTest, model):
     t_p_test: torch.Tensor = model(TensorInputForTest)
-    res: torch.Tensor = setTo1Or0(t_p_test, 0.46)
+    res: torch.Tensor = setTo1Or0(t_p_test, 0.50)
     return res
 
 
@@ -103,7 +112,7 @@ def saveResults(res, passengerId):
 
 
 def loadData(namePdFile, nameFileData):
-    if os.path.exists(PATH_DATA+namePdFile):
+    if os.path.exists(PATH_DATA+namePdFile) and FORCE_GENERATION_TENSOR == False:
         data: pd.DataFrame = pd.read_csv(
             PATH_DATA+namePdFile, delimiter=',', header=0)
     else:
@@ -133,9 +142,9 @@ def generateModel(TensorInputForTraining, TensorOutputForTraining):
 
 def loadDataFromFile(nameFile):
     df = pd.read_csv(PATH_DATA+nameFile, header=0, quotechar='"')
+    df['Title'] = df['Name'].str.split(", ", expand=True)[1].str.split(".", expand=True)[0]
     df = df.drop("Name", axis=1)
     df = df.drop("Ticket", axis=1)
-    df = df.drop("Fare", axis=1)
     df = df.drop("Cabin", axis=1)
     df = pd.get_dummies(df)
 
