@@ -79,7 +79,7 @@ def getModel(TensorInputForTraining, TensorOutputForTraining, nameModelFile):
 
 def generateOutputTest(TensorInputForTest, model):
     t_p_test: torch.Tensor = model(TensorInputForTest)
-    res: torch.Tensor = setTo1Or0(t_p_test, 0.50)
+    res: torch.Tensor = setTo1Or0(t_p_test, 0.46)
     return res
 
 
