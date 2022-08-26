@@ -6,6 +6,14 @@ import os.path
 import pandas as pd
 import matplotlib.pyplot as plt
 
+# import sys
+# print("Python version: {}". format(sys.version))
+# print("pandas version: {}". format(pd.__version__))
+# print("NumPy version: {}". format(np.__version__))
+# print("PyTorch version: {}". format(torch.__version__))
+# import matplotlib
+# print('Matplotlib: {}'.format(matplotlib.__version__))
+
 N_EPOCHS = 20000
 # With the value at false first it checks if there is already a model to load
 FORCE_GENERATION_NEW_MODEL = False
