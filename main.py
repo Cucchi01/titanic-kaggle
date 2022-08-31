@@ -46,6 +46,8 @@ def main():
 
     res = generateOutputTest(TensorInputForTest, model)
     saveResults(res, passengerId)
+    print()
+    input("Press a button to end the execution.....")
 
 
 def generateTensorForTraining():
@@ -179,7 +181,9 @@ def printGraphTrainingResults(results, n_epochs):
         data=data, index=index, columns=columns)
     resultDF['Training Loss'] = resultDF['Training Loss'].astype(float)
     resultDF.plot()
-    plt.show()
+    
+    #the print is placed at the end of the computations
+    plt.show(block=False)
 
 
 main()
